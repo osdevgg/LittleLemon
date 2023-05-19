@@ -17,7 +17,7 @@ from rest_framework_yaml.renderers import YAMLRenderer
 
 
 @api_view(['GET', 'POST'])
-@renderer_classes([YAMLRenderer])
+#@renderer_classes([YAMLRenderer])
 #@renderer_classes([CSVRenderer])
 def menu_items(request):
     if request.method == 'GET':
