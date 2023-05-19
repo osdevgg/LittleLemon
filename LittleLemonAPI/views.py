@@ -40,7 +40,7 @@ def menu_items(request,):
 # added for ordering by multiple fields, comma separated             
             ordering_fields = ordering.split(",")
 #            items = items.order_by(ordering)
-            items = items.order_by(*ordering)
+            items = items.order_by(*ordering_fields)
         serialized_item = MenuItemSerializer(items, many = True)
         return Response(serialized_item.data)
     if request.method == 'POST':
