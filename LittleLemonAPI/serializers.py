@@ -49,13 +49,8 @@ class MenuItemSerializer(serializers.ModelSerializer):
         
 # Validation Method 4: Using the validate() method 
     def validate(self, attrs):
-# Sanitization 2 within validate function
-        attrs['title'] = bleach.clean(attrs['title'])
-        if(attrs['price']<2):
-            raise serializers.ValidationError('Price should not be less than 2.0')
-#   use the actual field name for validating the stock which is inventory.        
-        if(attrs['inventory']<0):
-            raise serializers.ValidationError('Stock cannot be negative')
+# Sanitiza
+#         raise serializers.ValidationError('Stock cannot be negative')
         return super().validate(attrs)
     
 # Unique Validator before class Meta
