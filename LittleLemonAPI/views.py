@@ -26,7 +26,9 @@ def menu_items(request,):
         category_name = request.query_params.get('category')
         to_price = request.query_params.get('to_price')
 # Searching ?search=Chocolate
-        search = request.query_params.get('search')        
+        search = request.query_params.get('search')
+# Ordering ?ordering=inventory,-price
+        ordering = request.query_params.get('ordering'))        
         if category_name:
             items = items.filter(category__title = category_name)
         if to_price:
@@ -34,6 +36,8 @@ def menu_items(request,):
 # i to be case insensitive
         if search:
             items = items.filter(title__icontains=search)
+        if ordering:
+            items = items.order_by(ordering)
         serialized_item = MenuItemSerializer(items, many = True)
         return Response(serialized_item.data)
     if request.method == 'POST':
