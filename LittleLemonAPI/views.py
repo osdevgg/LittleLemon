@@ -12,6 +12,10 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework_csv.renderers import StaticHTMLRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
+
+# Pagination
+from django.core.paginator import Paginator,EmptyPage
+
 # Create your views here.
 
 
@@ -28,7 +32,13 @@ def menu_items(request,):
 # Searching ?search=Chocolate
         search = request.query_params.get('search')
 # Ordering ?ordering=inventory,-price
-        ordering = request.query_params.get('ordering')        
+        ordering = request.query_params.get('ordering')
+# Pagination        
+        perpage = request.query_params.get('perpage', default=2)
+        if int(perpage) > 4:
+            return Response({'error': 'you asked for too many items per page'},status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+
+        page = request.query_params.get('page', default=1)
         if category_name:
             items = items.filter(category__title = category_name)
         if to_price:
@@ -41,6 +51,14 @@ def menu_items(request,):
             ordering_fields = ordering.split(",")
 #            items = items.order_by(ordering)
             items = items.order_by(*ordering_fields)
+
+# Pagination
+        paginator = Paginator(items, per_page=perpage)
+        try:
+            items = paginator.page(number=page)
+        except EmptyPage:
+            items=[]
+
         serialized_item = MenuItemSerializer(items, many = True)
         return Response(serialized_item.data)
     if request.method == 'POST':
