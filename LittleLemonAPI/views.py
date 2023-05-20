@@ -28,7 +28,7 @@ def menu_items(request,):
 # Searching ?search=Chocolate
         search = request.query_params.get('search')
 # Ordering ?ordering=inventory,-price
-        ordering = request.query_params.get('ordering'))        
+        ordering = request.query_params.get('ordering')
         if category_name:
             items = items.filter(category__title = category_name)
         if to_price:
