@@ -16,6 +16,17 @@ from rest_framework_yaml.renderers import YAMLRenderer
 # Pagination
 from django.core.paginator import Paginator,EmptyPage
 
+# Class-based views w filtering classes
+from rest_framework import viewsets
+
+class MenuItemsViewSet(viewsets.ModelViewSet):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemSerializer
+# Ordering class-based    
+    ordering_fields = ['price', 'inventory']
+# Search class-based (default lookup_field is icontains) 
+    search_fields=['title', 'category__title']
+
 # Create your views here.
 
 
