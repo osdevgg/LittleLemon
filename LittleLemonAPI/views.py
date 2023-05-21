@@ -1,14 +1,14 @@
 from django.shortcuts import render
 
 from rest_framework.response import Response
-#from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view
 from .models import MenuItem
 from .serializers import MenuItemSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 
 from rest_framework.renderers import TemplateHTMLRenderer
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import renderer_classes
 from rest_framework_csv.renderers import CSVRenderer
 from rest_framework_csv.renderers import StaticHTMLRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
@@ -22,6 +22,13 @@ from rest_framework import viewsets
 # Token-based Authentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+
+# Throttling
+from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import UserRateThrottle
+from rest_framework.decorators import throttle_classes
+from .throttle import TenCallsPerMinute
+
 
 
 class MenuItemsViewSet(viewsets.ModelViewSet):
@@ -93,10 +100,36 @@ def single_item(request, id):
     serialized_item = MenuItemSerializer(item)
     return Response(serialized_item.data)
 
+# Token Authentication
 @api_view()
 @permission_classes([IsAuthenticated])
 def secret(request):
     return Response({"message": "Some important secret"})
+
+# User Authorization
+@api_view()
+@permission_classes([IsAuthenticated])
+def manager_view(request):
+    if request.user.groups.filter(name='Managers').exists():
+        return Response({'message': 'Only managers can see this'})
+    else:
+        return Response({'message': 'You are not authorized'}, 403)
+
+# Throttling
+@api_view()
+@throttle_classes([AnonRateThrottle])
+def throttle_check(request):
+    return Response({'message': 'succesful'})
+
+@api_view()
+@permission_classes([IsAuthenticated])
+#@throttle_classes([UserRateThrottle])
+@throttle_classes([TenCallsPerMinute]   )
+def throttle_check_auth(request):
+    return Response({'message': 'message for the logged users only'})
+
+
+
 
 #from rest_framework import generics
 #from .models import MenuItem
