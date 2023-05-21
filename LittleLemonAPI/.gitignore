@@ -1,2 +1,4 @@
 __pycache__/
 manage.py
+*.pyc
+.pyc
